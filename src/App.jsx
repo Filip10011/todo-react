@@ -1,16 +1,20 @@
 import "./App.css";
-import { RiCloseCircleLine } from "react-icons/ri";
-import { TiEdit } from "react-icons/ti";
+import Todo from "./components/Todo";
+
 import { useState } from "react";
+import TodoForm from "./components/TodoForm";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  console.log(todos);
+  const [todoToEdit, setTodoToEdit] = useState({
+    id: null,
+    value: "",
+  });
+  console.log(todoToEdit);
 
   const addTodo = (text) => {
     if (text.length <= 2 || text.length >= 30) return;
-
     const todo = {
       value: text,
       id: Math.floor(Math.random() * 100000),
@@ -19,23 +23,39 @@ const App = () => {
     setInputValue("");
   };
 
+  const onEditClick = (todoToEdit) => {
+    setTodoToEdit(todoToEdit);
+    setInputValue(todoToEdit.value);
+  };
+
+  const completeTodo = (id) => {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        todo.isComplete = !todo.isComplete;
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
+  };
+
   return (
     <div className="todo-app">
-      <div className="todo-form">
-        <h1>What is the plan for today?</h1>
-        <input
-          name="text"
-          placeholder={"Add a todo"}
-          className="todo-input"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <button className="todo-button" onClick={() => addTodo(inputValue)}>
-          Add todo
-        </button>
-      </div>
+      <TodoForm
+        addTodo={addTodo}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        todoToEdit={todoToEdit}
+      />
       {todos.map((todo) => (
-        <h1></h1>
+        <Todo
+          key={todo.id}
+          value={todo.value}
+          id={todo.id}
+          isComplete={todo.isComplete}
+          //removeTodo={removeTodo}
+          completeTodo={completeTodo}
+          onEditClick={onEditClick}
+        />
       ))}
     </div>
   );
