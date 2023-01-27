@@ -11,21 +11,23 @@ const App = () => {
     id: null,
     value: "",
   });
-  console.log(todoToEdit);
 
   const addTodo = (text) => {
-    if (text.length <= 2 || text.length >= 30) return;
+    if (text.length <= 2) return;
     const todo = {
       value: text,
-      id: Math.floor(Math.random() * 100000),
+      id: Math.floor(Math.random() * 10000),
     };
+
     setTodos((prevState) => [...prevState, todo]);
     setInputValue("");
   };
 
-  const onEditClick = (todoToEdit) => {
-    setTodoToEdit(todoToEdit);
-    setInputValue(todoToEdit.value);
+  const removeTodo = (id) => {
+    if (!id) return;
+    const filteredTodos = todos.filter((todo) => todo.id !== id);
+
+    setTodos(filteredTodos);
   };
 
   const completeTodo = (id) => {
@@ -35,24 +37,50 @@ const App = () => {
       }
       return todo;
     });
+
     setTodos(updatedTodos);
+  };
+
+  const editTodo = () => {
+    if (inputValue.length <= 2) return;
+    const editedTodo = {
+      id: todoToEdit.id,
+      value: inputValue,
+    };
+    setTodos((prevState) =>
+      prevState.map((todo) => (todo.id === editedTodo.id ? editedTodo : todo))
+    );
+    setTodoToEdit({
+      id: null,
+      value: "",
+    });
+    setInputValue("");
+  };
+
+  const onEditClick = (todoToEdit) => {
+    setTodoToEdit(todoToEdit);
+    setInputValue(todoToEdit.value);
   };
 
   return (
     <div className="todo-app">
+      <h1>What's the Plan for Today?</h1>
+
       <TodoForm
         addTodo={addTodo}
-        inputValue={inputValue}
         setInputValue={setInputValue}
+        inputValue={inputValue}
         todoToEdit={todoToEdit}
+        editTodo={editTodo}
       />
+
       {todos.map((todo) => (
         <Todo
           key={todo.id}
           value={todo.value}
-          id={todo.id}
           isComplete={todo.isComplete}
-          //removeTodo={removeTodo}
+          id={todo.id}
+          removeTodo={removeTodo}
           completeTodo={completeTodo}
           onEditClick={onEditClick}
         />
